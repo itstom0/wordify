@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <title>About - Wordify</title>
+    <style>
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            text-align: center;
+            padding: 50px;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        h1 {
+            color: #333;
+            font-size: 36px;
+        }
+        p {
+            color: #555;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .back-btn {
+            background-color: #FF7043;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .back-btn:hover {
+            background-color: #FF5722;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>About Wordify</h1>
+        <p>Wordify is a rip-off wordle unlimited game I made when I was really bored - which hopefully won't get blocked</p>
+        <ul style="text-align: left; margin-left: 20px; color: #555;">
+            <li>Guess the word in 6 tries</li>
+            <li>Colour-coded feedback for each guess</li>
+            <li>Have fun</li>
+        </ul>
+        <button class="back-btn" onclick="goHome()">Back to Home</button>
+    </div>
+
+    <script>
+        // Redirect to the homepage
+        function goHome() {
+            window.location.href = "home.html"; // Link to your homepage
+        }
+    </script>
+
+</body>
+</html>

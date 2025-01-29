@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #ff00ff; /* Bright neon pink background */
+            color: #00ff00; /* Neon green text */
+            text-align: center;
+            padding: 50px;
+            margin: 0;
+            font-size: 24px;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            color: #ff0000; /* Red text */
+            font-size: 60px;
+            text-shadow: 4px 4px 10px #ff00ff;
+        }
+
+        p {
+            color: #ffff00; /* Yellow text */
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        input {
+            background-color: #00ffff; /* Cyan input box */
+            color: #ff0000; /* Red text in input */
+            border: 5px dashed #ff00ff; /* Dashed border */
+            padding: 20px;
+            font-size: 20px;
+            width: 300px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #ff0000; /* Red button */
+            color: #ffffff; /* White text */
+            font-size: 25px;
+            padding: 20px 40px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 5px 5px 15px #ffff00;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #00ff00;
+            color: #ff0000;
+            box-shadow: 5px 5px 15px #ff00ff;
+        }
+
+        #guesses {
+            margin-top: 50px;
+            font-size: 20px;
+            color: #00ffff;
+        }
+
+        .row {
+            margin: 10px 0;
+        }
+
+        .box {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            font-size: 30px;
+            text-align: center;
+            line-height: 50px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            background-color: #ff00ff;
+        }
+
+        #restartButton {
+            margin-top: 20px;
+            padding: 20px 40px;
+            background-color: #ffff00;
+            color: #ff0000;
+            font-size: 25px;
+            border: none;
+            cursor: pointer;
+            border-radius: 15px;
+        }
+
+        #restartButton:hover {
+            background-color: #ff00ff;
+            color: #00ff00;
+        }
+
+        #alphabetGrid {
+            display: grid;
+            grid-template-columns: repeat(13, 50px);
+            grid-gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            background-color: #ffff00;
+            padding: 10px;
+        }
+
+        #alphabetGrid span {
+            display: block;
+            text-align: center;
+            font-size: 40px;
+            padding: 15px;
+            border: 3px solid #ff00ff;
+            border-radius: 10px;
+            background-color: #00ff00;
+            color: #ff0000;
+            cursor: pointer;
+        }
+
+        #alphabetGrid span.correct {
+            background-color: #ff0000;
+            color: #ffff00;
+        }
+
+        #alphabetGrid span.wrong-position {
+            background-color: #ff00ff;
+            color: #00ff00;
+        }
+
+        #alphabetGrid span.incorrect {
+            background-color: #ffff00;
+            color: #ff00ff;
+        }
+
+        .burger-menu {
+            display: block;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+
+        .burger-menu div {
+            width: 40px;
+            height: 5px;
+            margin: 8px 0;
+            background-color: #ff00ff;
+        }
+
+        .menu {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff0000;
+            border: 2px dashed #ffff00;
+            padding: 15px;
+            width: 200px;
+            text-align: left;
+            z-index: 999;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: #00ff00;
+            padding: 10px;
+            display: block;
+        }
+
+        .menu a:hover {
+            background-color: #00ff00;
+            color: #ff0000;
+        }
+
+        .feedback {
+            margin-top: 20px;
+        }
+
+        .feedback span {
+            font-size: 35px;
+            color: #ff00ff;
+            text-shadow: 5px 5px 10px #ff0000;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Burger Menu -->
+    <div class="burger-menu" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="menu" id="menu">
+        <a href="home.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="settings.html">Settings</a>
+        <a href="login.html">Login</a>
+    </div>
+
+    <h1>WORDIFY BRAINROT</h1>
+    <p>Guess the 5 letter brainrot word [BETA]:</p>
+
+    <input type="text" id="guess" maxlength="5" placeholder="Enter your guess" autofocus>
+    <button onclick="submitGuess()">Submit Guess</button>
+
+    <div id="gameStatus" class="feedback"></div>
+    <div id="guesses"></div>
+    <button id="restartButton" style="display: none;" onclick="restartGame()">Play Again</button>
+
+    <!-- Alphabet Grid for tracking guessed letters -->
+    <div id="alphabetGrid"></div>
+
+    <script>
+        let words = [];
+        let targetWord = "";
+        let attempts = 0;
+        let guesses = [];
+        let letterStatus = {};
+
+        // Initialize alphabet grid
+        function createAlphabetGrid() {
+            const alphabet = "abcdefghijklmnopqrstuvwxyz";
+            const alphabetGrid = document.getElementById("alphabetGrid");
+
+            alphabet.split('').forEach(letter => {
+                const span = document.createElement("span");
+                span.id = `letter-${letter}`;
+                span.textContent = letter.toUpperCase();
+                alphabetGrid.appendChild(span);
+                letterStatus[letter] = '⬜';  // Initialize each letter with "incorrect" color
+            });
+        }
+
+        // Load the word list from the external file
+        fetch('brainrotdatabase.txt')
+            .then(response => response.text())
+            .then(data => {
+                words = data.split('\n').map(word => word.trim()).filter(word => word.length === 5);
+                targetWord = words[Math.floor(Math.random() * words.length)];
+                console.log(`Target word (for testing): ${targetWord}`); // Remove in production
+            })
+            .catch(error => {
+                console.error("Failed to load the word list:", error);
+            });
+
+        // Function to update the alphabet grid after each guess
+        function updateAlphabetGrid(guess, result) {
+            const guessStatus = {};
+
+            guess.split('').forEach((letter, index) => {
+                if (result[index] === '🟩') {
+                    guessStatus[letter] = '🟩'; // Correct letter in the correct position
+                } else if (result[index] === '🟨') {
+                    // If previously yellow, update it to yellow
+                    if (guessStatus[letter] !== '🟩') {
+                        guessStatus[letter] = '🟨'; // Correct letter but wrong position
+                    }
+                } else {
+                    if (guessStatus[letter] !== '🟩') {
+                        guessStatus[letter] = '⬜'; // Incorrect letter
+                    }
+                }
+            });
+
+            // Update the grid display with the current letter status
+            Object.keys(guessStatus).forEach(letter => {
+                const span = document.getElementById(`letter-${letter}`);
+                const status = guessStatus[letter];
+
+                // Only update the letter's color if the status changes
+                if (letterStatus[letter] !== status) {
+                    letterStatus[letter] = status;
+
+                    if (status === '🟩') {
+                        span.classList.add('correct');
+                        span.classList.remove('wrong-position', 'incorrect');
+                    } else if (status === '🟨') {
+                        span.classList.add('wrong-position');
+                        span.classList.remove('correct', 'incorrect');
+                    } else if (status === '⬜') {
+                        span.classList.add('incorrect');
+                        span.classList.remove('correct', 'wrong-position');
+                    }
+                }
+            });
+        }
+
+        function submitGuess() {
+            const guess = document.getElementById("guess").value.toLowerCase();
+            if (guess.length !== 5) {
+                alert("Guess must be 5 letters long.");
+                return;
+            }
+
+            // Prevent the same guess from being made twice
+            if (guesses.includes(guess)) {
+                alert("You already guessed that word!");
+                return;
+            }
+
+            guesses.push(guess);
+            attempts++;
+            const result = checkGuess(guess);
+            displayGuessResult(guess, result);
+            updateAlphabetGrid(guess, result);
+            document.getElementById("guess").value = "";
+
+            if (result.every(r => r === '🟩')) {
+                document.getElementById("gameStatus").textContent = `🎉 You guessed the word correctly in ${attempts} attempts! 🏆`;
+                document.getElementById("restartButton").style.display = 'block';
+            } else if (attempts >= 6) {
+                document.getElementById("gameStatus").textContent = `Sorry, you've used all 6 attempts! The correct word was: ${targetWord}`;
+                document.getElementById("restartButton").style.display = 'block';
+            }
+        }
+
+        function checkGuess(guess) {
+            const result = [];
+            const targetWordArr = targetWord.split('');
+            const guessArr = guess.split('');
+
+            // Check for correct letters in the correct positions
+            for (let i = 0; i < 5; i++) {
+                if (guessArr[i] === targetWordArr[i]) {
+                    result[i] = '🟩'; // Correct position
+                    targetWordArr[i] = null; // Remove matched letter to prevent duplicate matches
+                } else {
+                    result[i] = null;
+                }
+            }
+
+            // Check for correct letters in wrong positions
+            for (let i = 0; i < 5; i++) {
+                if (result[i] === null && targetWordArr.includes(guessArr[i])) {
+                    result[i] = '🟨'; // Correct letter but wrong position
+                    targetWordArr[targetWordArr.indexOf(guessArr[i])] = null; // Remove matched letter
+                } else if (result[i] === null) {
+                    result[i] = '⬜'; // Incorrect letter
+                }
+            }
+
+            return result;
+        }
+
+        function displayGuessResult(guess, result) {
+            const guessElement = document.createElement("div");
+            guessElement.classList.add("row");
+
+            guess.split('').forEach((letter, index) => {
+                const box = document.createElement("div");
+                box.classList.add("box");
+                box.textContent = letter.toUpperCase();
+                guessElement.appendChild(box);
+
+                if (result[index] === '🟩') {
+                    box.style.backgroundColor = "#00ff00"; // Green for correct letter
+                } else if (result[index] === '🟨') {
+                    box.style.backgroundColor = "#ffff00"; // Yellow for wrong position
+                } else {
+                    box.style.backgroundColor = "#ff0000"; // Red for incorrect
+                }
+            });
+
+            document.getElementById("guesses").appendChild(guessElement);
+        }
+
+        function restartGame() {
+            location.reload(); // Reload the page to reset the game
+        }
+
+        // Toggle the burger menu visibility
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        }
+
+        // Initialize the alphabet grid when the page loads
+        window.onload = createAlphabetGrid;
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <title>WORDIFY</title>
+    <style>
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            text-align: center;
+            padding: 50px;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        h1 {
+            color: #333;
+            font-size: 36px;
+        }
+        .start-btn {
+            background-color: #FF7043;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .start-btn:hover {
+            background-color: #FF5722;
+        }
+        .description {
+            color: #555;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>WELCOME TO WORDIFY</h1>
+        <p class="description">Wanna try out this cooked wordle clone?</p>
+        <button class="start-btn" onclick="startGame()">Start Game</button>
+    </div>
+
+    <script>
+        // Start the game (you can later link this to the actual game logic)
+        function startGame() {
+            window.location.href = "index.html"; // Link to your game page
+        }
+    </script>
+
+</body>
+</html>
